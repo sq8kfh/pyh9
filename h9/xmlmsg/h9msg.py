@@ -9,7 +9,7 @@ class h9msg(h9XMLmsg):
         elif xml.tag == "h9msg":
             return h9msg(**xml.attrib)
 
-    def __init__(self, type, source, destination, dlc=0, data=None, priority='L', endpoint=None, send=False):
+    def __init__(self, type, seqnum, source, destination, dlc=0, data=None, priority='L', endpoint=None, send=False):
         super().__init__()
         if send:
             self.type = h9XMLmsg.H9_XMLMSG_SENDMSG
@@ -19,10 +19,11 @@ class h9msg(h9XMLmsg):
         self._endpoint = endpoint
         self._priority = priority
         self._type = int(type)
+        self._seqnum = int(seqnum)
         self._source = int(source)
         self._destination = int(destination)
         self._dlc = int(dlc)
         self._data = data
 
     def __str__(self):
-        return "%d -> %d priority: %c; type: %d; dlc: %d; endpoint '%s'" % (self._source, self._destination, self._priority, self._type, self._dlc, self._endpoint)
+        return "%d -> %d priority: %c; type: %d; seqnum: %d; dlc: %d; endpoint '%s'" % (self._source, self._destination, self._priority, self._type, self._seqnum, self._dlc, self._endpoint)
