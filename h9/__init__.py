@@ -1,3 +1,3 @@
-__all__ = ['xmlstream', 'xmlmsg']
+__all__ = ['msg', 'asyncmsgstream', 'msgstream']
 
 __version__ = "0.0.0"

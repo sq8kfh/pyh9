@@ -1,29 +1,29 @@
-import struct
 import socket
-from ..xmlmsg import h9XMLmsg
+import struct
 
-
-class h9XMLStream:
+class H9msgStream(object):
     def __init__(self, host, port):
         self._host = host
         self._port = port
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect((host, port))
 
-    def send_message(self, h9msg):
-        self._send(h9msg.to_string())
+    def connect(self):
+        pass
 
-    def _send(self, data):
-        self._sock.send(struct.pack("!I", len(data)))
-        self._sock.send(data)
+    def writemsg(self, msg):
+        self._sock.send(struct.pack("!I", len(msg)))
+        self._sock.sent(msg)
 
-    def read_message(self):
+    def readmsg(self):
         tmp = self._recv(4)
         length = struct.unpack("!I", tmp)[0]
 
         data = self._recv(length)
-        msg = h9XMLmsg.parse_xml(data)
-        return msg
+        #msg = h9XMLmsg.parse_xml(data)
+        return data
+
+    def close(self):
+        self._sock.close()
 
     def _recv(self, length):
         chunks = []
