@@ -25,7 +25,7 @@ class H9msg:
         if self._xml.tag != 'h9' and len(self._xml) != 1:
             return H9msg.MsgType.UNKNOWN
 
-        if self._xml[0].tag == 'frame_received':
+        if self._xml[0].tag == 'frame':
             return H9msg.MsgType.FRAME
         elif self._xml[0].tag == 'send_frame':
             return  H9msg.MsgType.SEND_FRAME
@@ -59,14 +59,16 @@ def xml_to_h9msg(xml: str):
     msg = H9msg(root)
 
     if msg.msg_type == H9msg.MsgType.FRAME:
-        from .h9frame import H9frame
-        msg.__class__ = H9frame
+        from .h9frame import H9Frame
+        msg.__class__ = H9Frame
         return msg
     elif msg.msg_type == H9msg.MsgType.SEND_FRAME:
-        pass
+        from .h9frame import H9SendFrame
+        msg.__class__ = H9SendFrame
+        return msg
     elif msg.msg_type == H9msg.MsgType.SUBSCRIBE:
-        from .h9subscribe import H9subscribe
-        msg.__class__ = H9subscribe
+        from .h9subscribe import H9Subscribe
+        msg.__class__ = H9Subscribe
         return msg
     elif msg.msg_type == H9msg.MsgType.ERROR:
         pass

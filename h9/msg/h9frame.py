@@ -4,7 +4,7 @@ from enum import Enum
 from .h9msg import H9msg
 
 
-class H9frame(H9msg):
+class H9SendFrame(H9msg):
     class Priority(Enum):
         H = 0
         L = 1
@@ -45,8 +45,8 @@ class H9frame(H9msg):
         U31 = 31
 
 
-    def __init__(self, priority: Priority, type: Type, seqnum: int, source: int, destination: int, data: []):
-        super(H9frame, self).__init__()
+    def __init__(self, priority: Priority, type: Type, seqnum: int, source: int, destination: int, data: [], endpoint = None):
+        super(H9SendFrame, self).__init__()
         lxml.etree.SubElement(self._xml, 'send_frame')
         self.priority = priority
         self.type = type
@@ -54,16 +54,16 @@ class H9frame(H9msg):
         self.source = source
         self.destination = destination
         self.data = data
-
+        self.endpoint = endpoint
 
     @property
     def priority(self) -> Priority:
-        return H9frame.Priority[self._xml[0].attrib.get("priority")]
+        return H9SendFrame.Priority[self._xml[0].attrib.get("priority").upper()]
 
 
     @property
     def type(self) -> Type:
-        return H9frame.Type(int(self._xml[0].attrib.get("type")))
+        return H9SendFrame.Type(int(self._xml[0].attrib.get("type")))
 
 
     @property
@@ -93,6 +93,11 @@ class H9frame(H9msg):
         if dlc < 1 or not hexstring:
             return []
         return struct.unpack('<%dB' % self.dlc, bytes.fromhex(hexstring))
+
+
+    @property
+    def endpoint(self) -> str:
+        return str(self._xml[0].attrib.get("endpoint"))
 
 
     @priority.setter
@@ -146,5 +151,44 @@ class H9frame(H9msg):
                 pass
 
 
+    @endpoint.setter
+    def endpoint(self, value: str):
+        if not value:
+            if 'endpoint' in self._xml[0].attrib:
+                del self._xml[0].attrib['endpoint']
+        else:
+            self._xml[0].attrib['endpoint'] = str(value)
+
+
     def to_dict(self):
-        return dict(priority = self.priority.name, type=self.type.value, seqnum=self.seqnum, source=self.source, destination=self.destination, dlc=self.dlc, data=self.data)
+        res = dict(priority = self.priority.name, type=self.type.value, seqnum=self.seqnum, source=self.source, destination=self.destination, dlc=self.dlc, data=self.data)
+        if self.endpoint:
+            res['endpoint'] = self.endpoint
+        return res
+
+
+class H9Frame(H9SendFrame):
+    def __init__(self, origin, priority: H9SendFrame.Priority, type: H9SendFrame.Type, seqnum: int, source: int, destination: int, data: [], endpoint = None):
+        super(H9SendFrame, self).__init__()
+        lxml.etree.SubElement(self._xml, 'frame')
+        self.origin = origin
+        self.priority = priority
+        self.type = type
+        self.seqnum = seqnum
+        self.source = source
+        self.destination = destination
+        self.data = data
+        self.endpoint = endpoint
+
+    @property
+    def origin(self) -> str:
+        return str(self._xml[0].attrib.get("origin"))
+
+    @origin.setter
+    def origin(self, value: str):
+        self._xml[0].attrib['origin'] = str(value)
+
+    def to_dict(self):
+        res = super(H9Frame, self).to_dict()
+        res['origin'] = self.origin
+        return res
