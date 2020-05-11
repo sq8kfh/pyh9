@@ -9,8 +9,8 @@ class H9msg:
         SEND_FRAME = 2
         SUBSCRIBE = 3
         ERROR = 4
-        METHODCALL = 5
-        METHODRESPONSE = 6
+        CALL = 5
+        RESPONSE = 6
 
 
     def __init__(self, xml_node: lxml.etree = None):
@@ -33,10 +33,10 @@ class H9msg:
             return  H9msg.MsgType.SUBSCRIBE
         elif self._xml[0].tag == 'error':
             return  H9msg.MsgType.ERROR
-        elif self._xml[0].tag == 'methodcall':
-            return  H9msg.MsgType.METHODCALL
-        elif self._xml[0].tag == 'methodresponse':
-            return  H9msg.MsgType.METHODRESPONSE
+        elif self._xml[0].tag == 'call':
+            return  H9msg.MsgType.CALL
+        elif self._xml[0].tag == 'response':
+            return  H9msg.MsgType.RESPONSE
         else:
             return H9msg.MsgType.UNKNOWN
 
@@ -71,10 +71,16 @@ def xml_to_h9msg(xml: str):
         msg.__class__ = H9Subscribe
         return msg
     elif msg.msg_type == H9msg.MsgType.ERROR:
-        pass
-    elif msg.msg_type == H9msg.MsgType.METHODCALL:
-        pass
-    elif msg.msg_type == H9msg.MsgType.METHODRESPONSE:
-        pass
+        from .h9error import H9Error
+        msg.__class__ = H9Error
+        return msg
+    elif msg.msg_type == H9msg.MsgType.CALL:
+        from .h9call import H9Call
+        msg.__class__ = H9Call
+        return msg
+    elif msg.msg_type == H9msg.MsgType.RESPONSE:
+        from .h9response import H9Response
+        msg.__class__ = H9Response
+        return msg
 
     return None

@@ -161,7 +161,7 @@ class H9SendFrame(H9msg):
 
 
     def to_dict(self):
-        res = dict(priority = self.priority.name, type=self.type.value, seqnum=self.seqnum, source=self.source, destination=self.destination, dlc=self.dlc, data=self.data)
+        res = dict(priority=self.priority.name, type=self.type.value, seqnum=self.seqnum, source=self.source, destination=self.destination, dlc=self.dlc, data=self.data)
         if self.endpoint:
             res['endpoint'] = self.endpoint
         return res
