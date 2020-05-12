@@ -9,7 +9,6 @@ class H9SendFrame(H9msg):
         H = 0
         L = 1
 
-
     class Type(Enum):
         NOP = 0
         PAGE_START = 1
@@ -44,8 +43,8 @@ class H9SendFrame(H9msg):
         U30 = 30
         U31 = 31
 
-
-    def __init__(self, priority: Priority, type: Type, seqnum: int, source: int, destination: int, data: [], endpoint = None):
+    def __init__(self, priority: Priority, type: Type, seqnum: int, source: int,
+                 destination: int, data: [], endpoint=None):
         super(H9SendFrame, self).__init__()
         lxml.etree.SubElement(self._xml, 'send_frame')
         self.priority = priority
@@ -60,31 +59,25 @@ class H9SendFrame(H9msg):
     def priority(self) -> Priority:
         return H9SendFrame.Priority[self._xml[0].attrib.get("priority").upper()]
 
-
     @property
     def type(self) -> Type:
         return H9SendFrame.Type(int(self._xml[0].attrib.get("type")))
-
 
     @property
     def seqnum(self) -> int:
         return int(self._xml[0].attrib.get("seqnum"))
 
-
     @property
     def source(self) -> int:
         return int(self._xml[0].attrib.get("source"))
-
 
     @property
     def destination(self) -> int:
         return int(self._xml[0].attrib.get("destination"))
 
-
     @property
     def dlc(self) -> int:
         return int(self._xml[0].attrib.get("dlc"))
-
 
     @property
     def data(self) -> []:
@@ -94,42 +87,35 @@ class H9SendFrame(H9msg):
             return []
         return struct.unpack('<%dB' % self.dlc, bytes.fromhex(hexstring))
 
-
     @property
     def endpoint(self) -> str:
         return str(self._xml[0].attrib.get("endpoint"))
-
 
     @priority.setter
     def priority(self, value: Priority):
         self._xml[0].attrib['priority'] = str(value.name)
 
-
     @type.setter
     def type(self, value: Type):
         self._xml[0].attrib['type'] = str(value.value)
 
-
     @seqnum.setter
     def seqnum(self, value: int):
-        if value < 0 or value >31:
+        if value < 0 or value > 31:
             raise ValueError('Seqnum value out of range')
         self._xml[0].attrib['seqnum'] = str(value)
 
-
     @source.setter
     def source(self, value: int):
-        if value < 0 or value >511:
+        if value < 0 or value > 511:
             raise ValueError('Source value out of range')
         self._xml[0].attrib['source'] = str(value)
 
-
     @destination.setter
     def destination(self, value: int):
-        if value < 0 or value >511:
+        if value < 0 or value > 511:
             raise ValueError('Destination value out of range')
         self._xml[0].attrib['destination'] = str(value)
-
 
     @data.setter
     def data(self, value: []):
@@ -150,7 +136,6 @@ class H9SendFrame(H9msg):
             except KeyError:
                 pass
 
-
     @endpoint.setter
     def endpoint(self, value: str):
         if not value:
@@ -159,16 +144,18 @@ class H9SendFrame(H9msg):
         else:
             self._xml[0].attrib['endpoint'] = str(value)
 
-
     def to_dict(self):
-        res = dict(priority=self.priority.name, type=self.type.value, seqnum=self.seqnum, source=self.source, destination=self.destination, dlc=self.dlc, data=self.data)
+        res = dict(priority=self.priority.name, type=self.type.value,
+                   seqnum=self.seqnum, source=self.source, destination=self.destination,
+                   dlc=self.dlc, data=self.data)
         if self.endpoint:
             res['endpoint'] = self.endpoint
         return res
 
 
 class H9Frame(H9SendFrame):
-    def __init__(self, origin, priority: H9SendFrame.Priority, type: H9SendFrame.Type, seqnum: int, source: int, destination: int, data: [], endpoint = None):
+    def __init__(self, origin, priority: H9SendFrame.Priority, type: H9SendFrame.Type,
+                 seqnum: int, source: int, destination: int, data: [], endpoint=None):
         super(H9SendFrame, self).__init__()
         lxml.etree.SubElement(self._xml, 'frame')
         self.origin = origin

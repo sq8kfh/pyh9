@@ -3,6 +3,7 @@ import struct
 
 from ..msg import H9msg, xml_to_h9msg
 
+
 class H9msgStream(object):
     def __init__(self, host, port):
         self._host = host

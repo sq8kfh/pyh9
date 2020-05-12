@@ -1,21 +1,20 @@
 from setuptools import setup, find_packages
 from codecs import open
-from os import path
 
-here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setup(
     name='h9',
     version='0.0.0',
+    author='Kamil Palkowski',
+    author_email='sq8kfh@gmail.com',
     description='h9 utils library',
     long_description=long_description,
     url='https://github.com/sq8kfh/pyh9',
-    author='Kamil Palkowski',
-    author_email='sq8kfh@gmail.com',
     license='MIT',
+    packages=find_packages(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -26,11 +25,12 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        "Operating System :: OS Independent",
     ],
     keywords='h9',
-    packages=find_packages(),
     python_requires='>=3.5',
     install_requires=[
         'lxml',
     ],
+    test_suite='tests',
 )

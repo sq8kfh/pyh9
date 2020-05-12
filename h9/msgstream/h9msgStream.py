@@ -1,6 +1,7 @@
 import socket
 import struct
 
+
 class H9msgStream(object):
     def __init__(self, host, port):
         self._host = host
@@ -19,7 +20,6 @@ class H9msgStream(object):
         length = struct.unpack("!I", tmp)[0]
 
         data = self._recv(length)
-        #msg = h9XMLmsg.parse_xml(data)
         return data
 
     def close(self):
