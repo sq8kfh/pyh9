@@ -1,5 +1,7 @@
 from enum import Enum
+
 import lxml.etree
+
 from .h9msg import H9msg
 
 

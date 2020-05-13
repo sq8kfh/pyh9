@@ -1,5 +1,6 @@
-import lxml.etree
 from enum import Enum
+
+import lxml.etree
 
 
 class H9msg:

@@ -1,6 +1,7 @@
-from h9.msg import H9Subscribe
-import h9.asyncmsgstream
 import asyncio
+
+import h9.asyncmsgstream
+from h9.msg import H9Subscribe
 
 
 async def run():

@@ -1,4 +1,5 @@
 import lxml.etree
+
 from .h9msg import H9msg
 
 
@@ -70,10 +71,17 @@ class _Common(H9msg):
 
     @value.setter
     def value(self, value: dict):
-        self._xml[0].append(self._to_xml(value))
+        if not value:
+            for child in self._xml[0]:
+                self._xml[0].remove(child)
+        else:
+            for k, v in value.items():
+                self._xml[0].append(self._to_xml(v, k))
 
     def to_dict(self):
-        res = dict(method=self.method, value=self.value)
+        res = dict(method=self.method)
+        if self.value:
+            res['value'] = self.value
         return res
 
 
