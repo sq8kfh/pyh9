@@ -4,6 +4,7 @@ import lxml.etree
 
 
 class H9msg:
+    next_id = 1
     class MsgType(Enum):
         UNKNOWN = 0
         FRAME = 1
@@ -15,7 +16,8 @@ class H9msg:
 
     def __init__(self, xml_node: lxml.etree = None):
         if xml_node is None:
-            self._xml = lxml.etree.Element('h9', version='0.0')
+            self._xml = lxml.etree.Element('h9', version='0.0', id=str(H9msg.next_id))
+            H9msg.next_id = H9msg.next_id + 1
         else:
             self._xml = xml_node
 
