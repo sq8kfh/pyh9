@@ -130,7 +130,10 @@ class H9SendFrame(H9msg):
         for b in value:
             if b is None or b == '':
                 break
-            tmpdata = tmpdata + "%0.2X" % int(b, 16)
+            if isinstance(b, int):
+                tmpdata = tmpdata + "%0.2X" % b
+            else:
+                tmpdata = tmpdata + "%0.2X" % int(b, 16)
             tmpdlc = tmpdlc + 1
         self._xml[0].attrib['dlc'] = str(tmpdlc)
         if tmpdlc:
