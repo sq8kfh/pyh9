@@ -1,7 +1,7 @@
 import asyncio
 import struct
 
-from ..msg import H9msg, xml_to_h9msg
+from ..msg import H9msg, xml_to_h9msg, H9Identification
 
 
 class H9msgStream(object):
@@ -9,8 +9,9 @@ class H9msgStream(object):
         self._host = host
         self._port = port
 
-    async def connect(self):
+    async def connect(self, entity="pyh9"):
         self._reader, self._writer = await asyncio.open_connection(self._host, self._port)
+        self.writemsg(H9Identification(entity))
 
     def writemsg(self, msg: H9msg):
         data = msg.to_bytes()

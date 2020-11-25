@@ -1,9 +1,10 @@
 import asyncio
 
 import h9.asyncmsgstream
-from h9.msg import H9Subscribe, H9msg, H9SendFrame, H9Frame
+from h9.msg import H9ExecuteMethod, H9SendFrame, H9Frame
 
 node_id = 32
+dev_des=[0, 5, 0, 1] #type_h, type_l, version_major, version_minor
 
 seqnum = -1
 reg_10 = 0
@@ -34,18 +35,25 @@ def procces_frame(conn, frame):
                               source=node_id,
                               destination=frame.source, data=[frame.data[0], reg_10])
             conn.writemsg(res)
+    elif frame.frametype == H9Frame.FrameType.DISCOVER:
+        res = H9SendFrame(priority=H9SendFrame.Priority.L,
+                          frametype=H9SendFrame.FrameType.NODE_INFO, seqnum=frame.seqnum,
+                          source=node_id,
+                          destination=frame.source, data=dev_des)
+        conn.writemsg(res)
 
 
 async def run():
     conn = h9.asyncmsgstream.H9msgStream("127.0.0.1", 7878)
     await conn.connect()
-    msg = H9Subscribe(H9Subscribe.Content.FRAME)
-    conn.writemsg(msg)
+    exec_method = H9ExecuteMethod("subscribe")
+    exec_method.value = {'event': 'frame'}
+    conn.writemsg(exec_method)
 
     frame = H9SendFrame(priority=H9SendFrame.Priority.L,
                         frametype=H9SendFrame.FrameType.NODE_TURNED_ON, seqnum=get_next_seqnum(),
                         source=node_id,
-                        destination=511, data=['0', '3', '0', '1'])
+                        destination=511, data=dev_des)
     conn.writemsg(frame)
     while True:
         recv_msg = await conn.readmsg()

@@ -85,17 +85,54 @@ class _Common(H9msg):
         return res
 
 
-class H9Call(_Common):
-    def __init__(self, method):
-        super(H9Call, self).__init__()
-        lxml.etree.SubElement(self._xml, 'call')
+class H9ExecuteMethod(_Common):
+    def __init__(self, method, parameters=None):
+        super(H9ExecuteMethod, self).__init__()
+        lxml.etree.SubElement(self._xml, 'execute')
         self.method = method
-        self.value = dict()
+        if isinstance(parameters, dict):
+            self.value = parameters
+        else:
+            self.value = dict()
 
 
-class H9Response(_Common):
+class H9MethodResponse(_Common):
     def __init__(self, method):
-        super(H9Response, self).__init__()
+        super(H9MethodResponse, self).__init__()
         lxml.etree.SubElement(self._xml, 'response')
         self.method = method
         self.value = dict()
+
+
+class H9ExecuteDeviceMethod(_Common):
+    def __init__(self, id, method):
+        super(H9ExecuteDeviceMethod, self).__init__()
+        lxml.etree.SubElement(self._xml, 'execute')
+        self.id = id
+        self.method = method
+        self.value = dict()
+
+    @property
+    def id(self) -> int:
+        return int(self._xml[0].attrib.get("id"))
+
+    @id.setter
+    def id(self, value: int):
+        self._xml[0].attrib['id'] = str(value)
+
+
+class H9DeviceMethodResponse(_Common):
+    def __init__(self, id, method):
+        super(H9DeviceMethodResponse, self).__init__()
+        lxml.etree.SubElement(self._xml, 'response')
+        self.id = id
+        self.method = method
+        self.value = dict()
+
+    @property
+    def id(self) -> int:
+        return int(self._xml[0].attrib.get("id"))
+
+    @id.setter
+    def id(self, value: int):
+        self._xml[0].attrib['id'] = str(value)

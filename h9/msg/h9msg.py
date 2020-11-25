@@ -7,12 +7,16 @@ class H9msg:
     next_id = 1
     class MsgType(Enum):
         UNKNOWN = 0
-        FRAME = 1
-        SEND_FRAME = 2
-        SUBSCRIBE = 3
-        ERROR = 4
-        CALL = 5
-        RESPONSE = 6
+        IDENTIFICATION = 1
+        FRAME = 2
+        SEND_FRAME = 3
+        SUBSCRIBE = 4
+        ERROR = 5
+        EXECUTEMETHOD = 6
+        METHODRESPONSE = 7
+        EXECUTEDEVICEMETHOD = 8
+        DEVICEMETHODRESPONSE = 9
+
 
     def __init__(self, xml_node: lxml.etree = None):
         if xml_node is None:
@@ -26,7 +30,9 @@ class H9msg:
         if self._xml.tag != 'h9' and len(self._xml) != 1:
             return H9msg.MsgType.UNKNOWN
 
-        if self._xml[0].tag == 'frame':
+        if self._xml[0].tag == 'identification':
+            return H9msg.MsgType.IDENTIFICATION
+        elif self._xml[0].tag == 'frame':
             return H9msg.MsgType.FRAME
         elif self._xml[0].tag == 'send_frame':
             return H9msg.MsgType.SEND_FRAME
@@ -34,10 +40,16 @@ class H9msg:
             return H9msg.MsgType.SUBSCRIBE
         elif self._xml[0].tag == 'error':
             return H9msg.MsgType.ERROR
-        elif self._xml[0].tag == 'call':
-            return H9msg.MsgType.CALL
+        elif self._xml[0].tag == 'execute':
+            if self._xml[0].attrib.get('id'):
+                return H9msg.MsgType.EXECUTEDEVICEMETHOD
+            else:
+                return H9msg.MsgType.EXECUTEMETHOD
         elif self._xml[0].tag == 'response':
-            return H9msg.MsgType.RESPONSE
+            if self._xml[0].attrib.get('id'):
+                return H9msg.MsgType.DEVICEMETHODRESPONSE
+            else:
+                return H9msg.MsgType.METHODRESPONSE
         else:
             return H9msg.MsgType.UNKNOWN
 
@@ -56,7 +68,11 @@ def xml_to_h9msg(xml: str):
     root = lxml.etree.fromstring(xml)
     msg = H9msg(root)
 
-    if msg.msg_type == H9msg.MsgType.FRAME:
+    if msg.msg_type == H9msg.MsgType.IDENTIFICATION:
+        from .h9frame import H9Identification
+        msg.__class__ = H9Identification
+        return msg
+    elif msg.msg_type == H9msg.MsgType.FRAME:
         from .h9frame import H9Frame
         msg.__class__ = H9Frame
         return msg
@@ -72,12 +88,12 @@ def xml_to_h9msg(xml: str):
         from .h9error import H9Error
         msg.__class__ = H9Error
         return msg
-    elif msg.msg_type == H9msg.MsgType.CALL:
-        from .h9call_response import H9Call
-        msg.__class__ = H9Call
+    elif msg.msg_type == H9msg.MsgType.EXECUTEMETHOD:
+        from .h9execute_response import H9ExecuteMethod
+        msg.__class__ = H9ExecuteMethod
         return msg
-    elif msg.msg_type == H9msg.MsgType.RESPONSE:
-        from .h9call_response import H9Response
-        msg.__class__ = H9Response
+    elif msg.msg_type == H9msg.MsgType.METHODRESPONSE:
+        from .h9execute_response import H9MethodResponse
+        msg.__class__ = H9MethodResponse
         return msg
     return None
