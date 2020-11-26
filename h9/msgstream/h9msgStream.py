@@ -9,12 +9,13 @@ class H9msgStream(object):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, entity="pyh9"):
+        self._sock.connect((self._host, self._port))
         self.writemsg(H9Identification(entity))
 
     def writemsg(self, msg):
         data = msg.to_bytes()
         self._sock.send(struct.pack("!I", len(data)))
-        self._sock.sent(data)
+        self._sock.send(data)
 
     def readmsg(self):
         tmp = self._recv(4)

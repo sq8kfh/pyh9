@@ -10,12 +10,12 @@ class H9msg:
         IDENTIFICATION = 1
         FRAME = 2
         SEND_FRAME = 3
-        SUBSCRIBE = 4
-        ERROR = 5
-        EXECUTEMETHOD = 6
-        METHODRESPONSE = 7
-        EXECUTEDEVICEMETHOD = 8
-        DEVICEMETHODRESPONSE = 9
+        ERROR = 4
+        EXECUTEMETHOD = 5
+        METHODRESPONSE = 6
+        EXECUTEDEVICEMETHOD = 7
+        DEVICEMETHODRESPONSE = 8
+        DEVICEEVENT = 9
 
 
     def __init__(self, xml_node: lxml.etree = None):
@@ -34,22 +34,22 @@ class H9msg:
             return H9msg.MsgType.IDENTIFICATION
         elif self._xml[0].tag == 'frame':
             return H9msg.MsgType.FRAME
-        elif self._xml[0].tag == 'send_frame':
+        elif self._xml[0].tag == 'sendframe':
             return H9msg.MsgType.SEND_FRAME
-        elif self._xml[0].tag == 'subscribe':
-            return H9msg.MsgType.SUBSCRIBE
         elif self._xml[0].tag == 'error':
             return H9msg.MsgType.ERROR
         elif self._xml[0].tag == 'execute':
-            if self._xml[0].attrib.get('id'):
+            if self._xml[0].attrib.get('device-id'):
                 return H9msg.MsgType.EXECUTEDEVICEMETHOD
             else:
                 return H9msg.MsgType.EXECUTEMETHOD
         elif self._xml[0].tag == 'response':
-            if self._xml[0].attrib.get('id'):
+            if self._xml[0].attrib.get('device-id'):
                 return H9msg.MsgType.DEVICEMETHODRESPONSE
             else:
                 return H9msg.MsgType.METHODRESPONSE
+        elif self._xml[0].tag == 'event':
+            return H9msg.MsgType.DEVICEEVENT
         else:
             return H9msg.MsgType.UNKNOWN
 
@@ -80,20 +80,28 @@ def xml_to_h9msg(xml: str):
         from .h9frame import H9SendFrame
         msg.__class__ = H9SendFrame
         return msg
-    elif msg.msg_type == H9msg.MsgType.SUBSCRIBE:
-        from .h9subscribe import H9Subscribe
-        msg.__class__ = H9Subscribe
-        return msg
     elif msg.msg_type == H9msg.MsgType.ERROR:
         from .h9error import H9Error
         msg.__class__ = H9Error
         return msg
     elif msg.msg_type == H9msg.MsgType.EXECUTEMETHOD:
-        from .h9execute_response import H9ExecuteMethod
+        from .method import H9ExecuteMethod
         msg.__class__ = H9ExecuteMethod
         return msg
     elif msg.msg_type == H9msg.MsgType.METHODRESPONSE:
-        from .h9execute_response import H9MethodResponse
+        from .method import H9MethodResponse
         msg.__class__ = H9MethodResponse
+        return msg
+    elif msg.msg_type == H9msg.MsgType.EXECUTEDEVICEMETHOD:
+        from .device import H9ExecuteDeviceMethod
+        msg.__class__ = H9ExecuteDeviceMethod
+        return msg
+    elif msg.msg_type == H9msg.MsgType.DEVICEMETHODRESPONSE:
+        from .device import H9DeviceMethodResponse
+        msg.__class__ = H9DeviceMethodResponse
+        return msg
+    elif msg.msg_type == H9msg.MsgType.DEVICEEVENT:
+        from .device import H9DeviceEvent
+        msg.__class__ = H9DeviceEvent
         return msg
     return None

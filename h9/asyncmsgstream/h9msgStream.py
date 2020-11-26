@@ -1,3 +1,4 @@
+import logging
 import asyncio
 import struct
 
@@ -23,7 +24,6 @@ class H9msgStream(object):
         length = struct.unpack("!I", tmp)[0]
 
         data = await self._reader.readexactly(length)
-
         msg = xml_to_h9msg(data)
         return msg
 

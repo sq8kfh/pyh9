@@ -48,7 +48,7 @@ class H9SendFrame(H9msg):
     def __init__(self, priority: Priority, frametype: FrameType, seqnum: int, source: int,
                  destination: int, data: [], endpoint=''):
         super(H9SendFrame, self).__init__()
-        lxml.etree.SubElement(self._xml, 'send_frame')
+        lxml.etree.SubElement(self._xml, 'sendframe')
         self.priority = priority
         self.frametype = frametype
         self.seqnum = seqnum
