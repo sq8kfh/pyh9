@@ -49,6 +49,22 @@ class H9DeviceMethodResponse(CommonDeviceMethod):
         self.method = method
         self.value = dict()
 
+    @property
+    def execute_status(self) -> bool:
+        return str(self._xml[0].attrib.get('execute-status')) == 'OK'
+
+    @execute_status.setter
+    def execute_status(self, value: bool):
+        if value:
+            self._xml[0].attrib['execute-status'] = 'OK'
+        else:
+            self._xml[0].attrib['execute-status'] = 'FAIL'
+
+    def to_dict(self):
+        res = super().to_dict()
+        res['execute_status'] = self.execute_status
+        return res
+
 
 class H9DeviceEvent(CommonDevice):
     def __init__(self, device_id, event):

@@ -42,3 +42,13 @@ class H9Error(H9msg):
                 del self._xml[0].attrib['msg']
         else:
             self._xml[0].attrib['msg'] = str(value)
+
+    def to_dict(self):
+        res = dict()
+        if self.errnum:
+            res['errnum'] = self.errnum
+        if self.name:
+            res['name'] = self.msg
+        if self.msg:
+            res['msg'] = self.msg
+        return res
