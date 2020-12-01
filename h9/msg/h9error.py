@@ -4,28 +4,28 @@ from .h9msg import H9msg
 
 
 class H9Error(H9msg):
-    def __init__(self, errnum: int, name: str = None, msg: str = None):
+    def __init__(self, code: int, message: str, name: str = None):
         super(H9Error, self).__init__()
         lxml.etree.SubElement(self._xml, 'error')
-        self.errnum = errnum
+        self.code = code
         self.name = name
-        self.msg = msg
+        self.message = message
 
     @property
-    def errnum(self) -> int:
-        return int(self._xml[0].attrib.get("errnum"))
+    def code(self) -> int:
+        return int(self._xml[0].attrib.get("code"))
 
     @property
     def name(self) -> str:
         return str(self._xml[0].attrib.get("name"))
 
     @property
-    def msg(self) -> str:
-        return str(self._xml[0].attrib.get("msg"))
+    def message(self) -> str:
+        return str(self._xml[0].attrib.get("message"))
 
-    @errnum.setter
-    def errnum(self, value: int):
-        self._xml[0].attrib['errnum'] = str(value)
+    @code.setter
+    def code(self, value: int):
+        self._xml[0].attrib['code'] = str(value)
 
     @name.setter
     def name(self, value: str):
@@ -35,20 +35,16 @@ class H9Error(H9msg):
         else:
             self._xml[0].attrib['name'] = str(value)
 
-    @msg.setter
-    def msg(self, value: str):
-        if not value:
-            if 'msg' in self._xml[0].attrib:
-                del self._xml[0].attrib['msg']
-        else:
-            self._xml[0].attrib['msg'] = str(value)
+    @message.setter
+    def message(self, value: str):
+        self._xml[0].attrib['message'] = str(value)
 
     def to_dict(self):
         res = dict()
         if self.errnum:
-            res['errnum'] = self.errnum
+            res['code'] = self.code
         if self.name:
-            res['name'] = self.msg
+            res['name'] = self.name
         if self.msg:
-            res['msg'] = self.msg
+            res['message'] = self.message
         return res

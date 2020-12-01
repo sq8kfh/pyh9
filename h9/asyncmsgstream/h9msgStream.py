@@ -16,6 +16,8 @@ class H9msgStream(object):
 
     def writemsg(self, msg: H9msg):
         data = msg.to_bytes()
+        if not self._writer:
+            logging.warning("NOT")
         self._writer.write(struct.pack("!I", len(data)))
         self._writer.write(data)
 
