@@ -7,7 +7,10 @@ class Common(H9msg):
         if isinstance(res, dict):
             for n in node:
                 if n.tag == 'value':
-                    res[n.attrib['name']] = n.text
+                    if n.text is None:
+                        res[n.attrib['name']] = ''
+                    else:
+                        res[n.attrib['name']] = n.text
                 elif n.tag == 'dict':
                     tmp = {}
                     self._dump(n, tmp)
