@@ -119,22 +119,22 @@ class H9DeviceMethodResponse(CommonDeviceMethod):
 
 
 class H9DeviceEvent(CommonDevice):
-    def __init__(self, device_id, event):
+    def __init__(self, device_id, event_name):
         super(H9DeviceEvent, self).__init__()
         lxml.etree.SubElement(self._xml, 'event')
         self.device_id = device_id
-        self.event = event
+        self.event_name = event_name
         self.value = dict()
 
     @property
-    def event(self) -> str:
+    def event_name(self) -> str:
         return str(self._xml[0].attrib.get("event"))
 
-    @event.setter
-    def event(self, value: str):
+    @event_name.setter
+    def event_name(self, value: str):
         self._xml[0].attrib['event'] = str(value)
 
     def to_dict(self):
         res = super().to_dict()
-        res['event'] = self.event
+        res['event_name'] = self.event_name
         return res
